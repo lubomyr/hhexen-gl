@@ -1,0 +1,32 @@
+diff -ru hhexen-1.6.3-src-orig/sdl/i_sdlgl.c hhexen-1.6.3-src/sdl/i_sdlgl.c
+--- hhexen-1.6.3-src-orig/sdl/i_sdlgl.c	2010-11-12 17:50:38.000000000 +0200
++++ hhexen-1.6.3-src/sdl/i_sdlgl.c	2015-03-12 19:35:28.000000000 +0200
+@@ -154,7 +154,15 @@
+ 	}
+ 
+ 	vid_initialized = true;
+-
++#ifdef ANDROID
++	screenWidth  = SDL_ListModes(NULL, 0)[0]->w;
++	screenHeight = SDL_ListModes(NULL, 0)[0]->h;
++	if (SDL_SetVideoMode(screenWidth, screenHeight, 8, flags) == NULL)
++	{
++		I_Error("Couldn't set video mode %dx%d: %s\n",
++			screenWidth, screenHeight, SDL_GetError());
++	}
++#endif
+ 	OGL_InitRenderer ();
+ 
+ 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+diff -ru hhexen-1.6.3-src-orig/unix/i_linux.c hhexen-1.6.3-src/unix/i_linux.c
+--- hhexen-1.6.3-src-orig/unix/i_linux.c	2009-06-04 10:15:54.000000000 +0300
++++ hhexen-1.6.3-src/unix/i_linux.c	2015-01-02 22:00:29.000000000 +0200
+@@ -14,7 +14,7 @@
+ #include "h2def.h"
+ #include "soundst.h"
+ #include "st_start.h"
+-
++#include <SDL.h>
+ 
+ extern void I_StartupMouse(void);
+ extern void I_ShutdownGraphics(void);
